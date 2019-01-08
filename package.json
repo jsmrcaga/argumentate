@@ -1,0 +1,22 @@
+{
+  "name": "argumentate",
+  "version": "0.0.1",
+  "description": "A simple argv parser (like so many others)",
+  "main": "argumentate.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsmrcaga/argumentate"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "argv",
+    "args",
+    "arguments",
+    "console",
+    "cli"
+  ],
+  "author": "Jo Colina <jo@jocolina.com>",
+  "license": "MIT"
+}
