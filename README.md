@@ -19,4 +19,21 @@ let { options, variables } = argumentate(process.argv.slice(2));
 // be happy
 ```
 
+## Mappings
+
+```js
+ argumentate(['start', '-p=8080', '-c', './myconfig.json'], {
+ 	p: 'port',
+ 	c: 'config'
+ });
+ 
+{ 
+	options: {
+		port: '8080',
+		config: './myconfig.json'
+	},
+	variables: ['start']
+}
+````
+
 More info in comments!!
