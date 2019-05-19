@@ -10,7 +10,15 @@ const isOption = (arg) => /^--/.test(arg) || /^-/.test(arg);
  * @param {string} arg => Argument (option) from which to extract the name
  * @returns {string} option name
  */
-const getOptionName = (arg) => arg.replace(/-(-)?/g, '');
+const getOptionName = (arg, mappings={}) => {
+	let opt = arg.replace(/-(-)?/g, '');
+
+	if(mappings[opt]) {
+		return mappings[opt];
+	}
+
+	return opt;
+};
 
 /**
  * @function
@@ -29,8 +37,20 @@ const getOptionName = (arg) => arg.replace(/-(-)?/g, '');
  * >	},
  * >	variables: ['start']
  * > }
+ *
+ *
+ * @example
+ * argumentate(['start', '-p=8080', '-c', './myconfig.json'], { p: 'port', c: 'config' })
+ *
+ * > { 
+ * >	options: {
+ * >		port: '8080',
+ * >		config: './myconfig.json'
+ * >	},
+ * >	variables: ['start']
+ * > }
  */
-module.exports = function(args) {
+module.exports = function(args, mapping={}) {
 	let options = {};
 	let variables = [];
 
@@ -41,14 +61,14 @@ module.exports = function(args) {
 
 			if(arg.indexOf('=') > -1) {
 				let [option, value] = arg.split('=');
-				options[getOptionName(option)] = value;
+				options[getOptionName(option, mapping)] = value;
 
 			} else {
 				if(!args[i+1] || isOption(args[i+1])) {
-					options[getOptionName(arg)] = true;
+					options[getOptionName(arg, mapping)] = true;
 
 				} else {
-					options[getOptionName(arg)] = args[i+1];
+					options[getOptionName(arg, mapping)] = args[i+1];
 					i++;
 
 				}

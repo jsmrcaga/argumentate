@@ -8,7 +8,7 @@
     "url": "https://github.com/jsmrcaga/argumentate"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "nyc mocha --exit test"
   },
   "keywords": [
     "argv",
@@ -18,5 +18,10 @@
     "cli"
   ],
   "author": "Jo Colina <jo@jocolina.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1"
+  }
 }
