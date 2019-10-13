@@ -11,7 +11,10 @@ const isOption = (arg) => /^--/.test(arg) || /^-/.test(arg);
  * @returns {string} option name
  */
 const getOptionName = (arg, mappings={}) => {
-	let opt = arg.replace(/-(-)?/g, '');
+	// Delete first dashes (ex: --plep-plop ==> plep-plop)
+	let opt = arg.replace(/^-(-)?/g, '');
+	// replace remaining dashes with _, example: plep-plop ==> plep_plop
+	opt = opt.replace(/-/g, '_');
 
 	if(mappings[opt]) {
 		return mappings[opt];
