@@ -57,6 +57,21 @@ module.exports = function(args, mapping={}) {
 	let options = {};
 	let variables = [];
 
+	const set_option = (name, value) => {
+		if(!options[name]) {
+			return options[name] = value;
+		}
+
+		if(options[name] instanceof Array) {
+			return options[name].push(value);
+		}
+
+		// options[name] exists and is not an array ==> value
+		if(options[name] !== value) {
+			return options[name] = [options[name], value];
+		}
+	};
+
 	for(let i = 0; i < args.length; i++) {
 		let arg = args[i];
 
@@ -64,16 +79,15 @@ module.exports = function(args, mapping={}) {
 
 			if(arg.indexOf('=') > -1) {
 				let [option, value] = arg.split('=');
-				options[getOptionName(option, mapping)] = value;
+				set_option(getOptionName(option, mapping), value);
 
 			} else {
 				if(!args[i+1] || isOption(args[i+1])) {
-					options[getOptionName(arg, mapping)] = true;
+					set_option(getOptionName(arg, mapping), true);
 
 				} else {
-					options[getOptionName(arg, mapping)] = args[i+1];
+					set_option(getOptionName(arg, mapping), args[i+1]);
 					i++;
-
 				}
 			}
 

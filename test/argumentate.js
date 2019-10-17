@@ -66,6 +66,17 @@ describe('Argumentate', () => {
 		expect(argumentate.options.c).to.be.eql('start');
 	});
 
+	it('Should be able to understand many identical options with value (=)/ without value', () => {
+		let args = ['-c=start', '-c', 'plep', '-c=45'];
+		let argumentate = Argumentate(args);
+
+		expect(argumentate).to.have.property('options');
+		expect(Object.keys(argumentate.options).length).to.be.eql(1);
+		expect(argumentate.options).to.have.property('c');
+		expect(argumentate.options.c).to.be.an.instanceof(Array);
+		expect(argumentate.options.c).to.be.eql(['start', 'plep', '45']);
+	});
+
 	it('Should be able to understand a simple option with value (spaced)', () => {
 		let args = ['start', '-c', 'poulet'];
 		let argumentate = Argumentate(args);
