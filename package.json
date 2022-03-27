@@ -8,7 +8,7 @@
     "url": "https://github.com/jsmrcaga/argumentate"
   },
   "scripts": {
-    "test": "nyc mocha --exit test"
+    "test": "mocha --exit test"
   },
   "keywords": [
     "argv",
@@ -22,6 +22,6 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
-    "nyc": "^14.1.1"
+    "sinon": "^13.0.1"
   }
 }
