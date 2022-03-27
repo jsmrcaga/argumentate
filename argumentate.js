@@ -1,59 +1,56 @@
-/**
- * Check if argument is an option (begins with -- or -)
- * @param {string} arg - Argument to check
- * @returns {bool} Is it then?
- */
 const isOption = (arg) => /^--/.test(arg) || /^-/.test(arg);
 
-/**
- * Gets the name of a given option (ex: --plep ==> plep)
- * @param {string} arg => Argument (option) from which to extract the name
- * @returns {string} option name
- */
-const getOptionName = (arg, mappings={}) => {
+const getOptionName = (arg, mapping={}) => {
 	// Delete first dashes (ex: --plep-plop ==> plep-plop)
 	let opt = arg.replace(/^-(-)?/g, '');
 	// replace remaining dashes with _, example: plep-plop ==> plep_plop
 	opt = opt.replace(/-/g, '_');
 
-	if(mappings[opt]) {
-		return mappings[opt];
+	if(mapping[opt]) {
+		if(mapping[opt] instanceof Object) {
+			return mapping[opt].key;
+		}
+		return mapping[opt];
 	}
 
 	return opt;
 };
 
-/**
- * @function
- * @name argumentate
- * Extracts options and variables from arguments
- * @param {string[]} args - List of arguments, usually process.argv (.slice(2) to remove paths)
- * @returns {Object} {options:{}, variables: []} Object containing options {opt: true}, and array of variables
- *
- * @example
- * $ argumentate(['start', '-p=8080', '-c', './myconfig.json'])
- * 
- * > { 
- * >	options: {
- * >		p: '8080',
- * >		c: './myconfig.json'
- * >	},
- * >	variables: ['start']
- * > }
- *
- *
- * @example
- * argumentate(['start', '-p=8080', '-c', './myconfig.json'], { p: 'port', c: 'config' })
- *
- * > { 
- * >	options: {
- * >		port: '8080',
- * >		config: './myconfig.json'
- * >	},
- * >	variables: ['start']
- * > }
- */
-module.exports = function(args, mapping={}) {
+const default_help = ({ options, variables, mapping }, { name, command }) => {
+	const options_help = Object.entries(mapping).map(([k, v]) => {
+		const word_option = typeof v === 'string' ? v : v.key;
+		const word_description = v instanceof Object ? v.help : '';
+
+		return `\t-${k}, --${word_option}\t\t${word_description}`;
+	}).join('\n');
+
+	return console.log(`
+${name}
+
+Usage:
+	${command} [options]
+
+Options:
+${options_help}`);
+};
+
+// mapping is a list of options & default values, or description and keys
+// { c: 'config', p: { key: 'port', help: 'The port to use when launching this command' } }
+function argumentate({ args=process.argv.slice(2), mapping={}, config={} }={}) {
+	const {
+		useHelp=true,
+		helpKey='h',
+		helpWord='help',
+		autoExit=true,
+		help=default_help,
+		name,
+		command
+	} = config;
+
+	if(useHelp && !mapping[helpKey]) {
+		mapping[helpKey] = helpWord;
+	}
+
 	let options = {};
 	let variables = [];
 
@@ -96,8 +93,21 @@ module.exports = function(args, mapping={}) {
 		}
 	}
 
+	if(useHelp && (options[helpWord] || options[helpKey])) {
+		if(!(help instanceof Function)) {
+			throw new Error(`The help argument must be a function, got ${typeof help}`);
+		}
+
+		help({ options, variables, mapping }, { name, command });
+		if(autoExit) {
+			return process.exit(0);
+		}
+	}
+
 	return {
 		options,
 		variables
 	};
 };
+
+module.exports = argumentate;

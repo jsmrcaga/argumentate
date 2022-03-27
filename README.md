@@ -14,7 +14,20 @@ A *very* simple argv parser
 let argumentate = require('argumentate');
 
 // slice to remove path args
-let { options, variables } = argumentate(process.argv.slice(2));
+let { options, variables } = argumentate({
+	args: process.argv.slice(2),
+	mapping: {
+		c: 'config',
+		p: {
+			key: 'port',
+			help: 'Port to use when launching this command'
+		}
+	},
+	config: {
+		name: 'My CLI',
+		command: 'invoke-like-this'
+	}
+);
 
 // be happy
 ```
@@ -22,11 +35,18 @@ let { options, variables } = argumentate(process.argv.slice(2));
 ## Mappings
 
 ```js
- argumentate(['start', '-p=8080', '-c', './myconfig.json'], {
- 	p: 'port',
- 	c: 'config'
- });
- 
+ const { options, variables } = argumentate({
+ 	args: ['start', '-p=8080', '-c', './myconfig.json'],
+ 	mapping: {
+	 	c: 'config',
+		p: {
+			key: 'port',
+			help: 'Port to use when launching this command'
+		}
+ 	}
+ );
+
+// returns
 { 
 	options: {
 		port: '8080',
@@ -35,5 +55,3 @@ let { options, variables } = argumentate(process.argv.slice(2));
 	variables: ['start']
 }
 ````
-
-More info in comments!!
